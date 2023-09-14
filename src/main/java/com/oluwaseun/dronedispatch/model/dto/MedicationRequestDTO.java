@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
-public class MedicationDTO {
+public class MedicationRequestDTO {
     @NotBlank(message = "name is required")
     @Pattern(regexp = "^[a-zA-Z0-9_-]*$", message = "name can only contain letters, numbers, underscores and hyphens")
     private String name;

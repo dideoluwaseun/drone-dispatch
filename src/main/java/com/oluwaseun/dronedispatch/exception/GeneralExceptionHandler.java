@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,22 +29,33 @@ public class GeneralExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({MethodArgumentNotValidException.class, MissingServletRequestParameterException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .path(request.getRequestURI())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .message(Objects.requireNonNull(ex.getFieldError()).getDefaultMessage())
-                .timestamp(Calendar.getInstance().getTime())
-                .build();
+    public ResponseEntity<ErrorResponse> handleBadArgumentException(Exception ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = null;
+        if(ex instanceof MethodArgumentNotValidException exception) {
+            errorResponse = ErrorResponse.builder()
+                    .path(request.getRequestURI())
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message(Objects.requireNonNull(exception.getFieldError()).getDefaultMessage())
+                    .timestamp(Calendar.getInstance().getTime())
+                    .build();
+        }
+        if(ex instanceof MissingServletRequestParameterException exception) {
+            errorResponse = ErrorResponse.builder()
+                    .path(request.getRequestURI())
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message(exception.getMessage())
+                    .timestamp(Calendar.getInstance().getTime())
+                    .build();
+        }
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DuplicateEntityException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorResponse> handleBadRequest(DuplicateEntityException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleDuplicateException(DuplicateEntityException ex, HttpServletRequest request) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .path(request.getRequestURI())
                 .status(HttpStatus.BAD_REQUEST.value())
