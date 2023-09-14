@@ -1,4 +1,4 @@
-package com.oluwaseun.dronedispatch.model;
+package com.oluwaseun.dronedispatch.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

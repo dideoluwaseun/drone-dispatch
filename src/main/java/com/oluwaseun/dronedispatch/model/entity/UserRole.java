@@ -1,4 +1,4 @@
-package com.oluwaseun.dronedispatch.model;
+package com.oluwaseun.dronedispatch.model.entity;
 
 import org.springframework.security.core.GrantedAuthority;
 

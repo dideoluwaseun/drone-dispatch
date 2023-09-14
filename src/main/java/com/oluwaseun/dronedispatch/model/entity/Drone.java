@@ -1,8 +1,7 @@
-package com.oluwaseun.dronedispatch.model;
+package com.oluwaseun.dronedispatch.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Pattern;
 import java.util.HashSet;
@@ -11,6 +10,9 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Drone {
 
     @Id
