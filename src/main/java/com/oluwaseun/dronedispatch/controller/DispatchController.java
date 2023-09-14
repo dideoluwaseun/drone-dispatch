@@ -41,4 +41,9 @@ public class DispatchController {
     public ResponseEntity<Page<DroneResponse>> getAllDrones(@RequestParam Integer pageIndex, Integer pageSize) {
         return new ResponseEntity<>(droneDispatchService.getAllDrones(pageIndex, pageSize), HttpStatus.OK);
     }
+
+    @GetMapping("/drone/{id}")
+    public ResponseEntity<DroneResponse> getDroneById(@PathVariable Long id) {
+        return new ResponseEntity<>(droneDispatchService.getDroneById(id), HttpStatus.OK);
+    }
 }

@@ -8,5 +8,6 @@ import org.springframework.data.domain.Page;
 public interface DroneDispatchService {
     Drone registerDrone(DroneDTO droneDTO);
     Page<DroneResponse> getAllDrones(Integer pageIndex, Integer pageSize);
+    DroneResponse getDroneById(Long id);
 
 }

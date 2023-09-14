@@ -1,6 +1,7 @@
 package com.oluwaseun.dronedispatch.service.impl;
 
 import com.oluwaseun.dronedispatch.exception.DuplicateEntityException;
+import com.oluwaseun.dronedispatch.exception.EntityNotFoundException;
 import com.oluwaseun.dronedispatch.model.dto.DroneDTO;
 import com.oluwaseun.dronedispatch.model.dto.DroneResponse;
 import com.oluwaseun.dronedispatch.model.entity.Drone;
@@ -52,5 +53,27 @@ public class DroneDispatchServiceImpl implements DroneDispatchService {
                 .model(drone.getModel())
                 .batteryCapacity(drone.getBatteryCapacity())
                 .build());
+    }
+
+    @Override
+    public DroneResponse getDroneById(Long id) {
+        log.info("processing get drone by id {} request", id);
+
+        Optional<Drone> drone = droneRepository.findById(id);
+        if(drone.isEmpty()) {
+            log.error("drone does not exist");
+            throw new EntityNotFoundException("drone does not exist");
+        }
+
+        log.info("done processing get drone by id {} request", id);
+
+        return DroneResponse.builder()
+                .id(drone.get().getId())
+                .serialNumber(drone.get().getSerialNumber())
+                .state(drone.get().getState())
+                .model(drone.get().getModel())
+                .batteryCapacity(drone.get().getBatteryCapacity())
+                .medications(drone.get().getMedications())
+                .build();
     }
 }
