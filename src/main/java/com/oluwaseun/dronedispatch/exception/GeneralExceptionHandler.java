@@ -38,7 +38,7 @@ public class GeneralExceptionHandler {
                 .timestamp(Calendar.getInstance().getTime())
                 .build();
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DuplicateEntityException.class)
