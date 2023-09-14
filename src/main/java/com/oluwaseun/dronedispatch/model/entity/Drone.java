@@ -1,6 +1,9 @@
 package com.oluwaseun.dronedispatch.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -23,6 +26,9 @@ public class Drone {
     private String serialNumber;
     @Enumerated(EnumType.STRING)
     private DroneModel model;
+
+    @Min(value = 1, message = "Value must be greater than or equal to 1")
+    @Max(value = 100, message = "Value must be less than or equal to 100")
     private Integer batteryCapacity;
     @Enumerated(EnumType.STRING)
     private DroneState state;
@@ -36,5 +42,6 @@ public class Drone {
     private Set<Medication> medications = new HashSet<>();
 
     @OneToMany
+    @JsonBackReference
     private Set<AuditEventLog> auditEventLogs = new HashSet<>();
 }
