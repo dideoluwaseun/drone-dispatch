@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class MedicationResponseDTO {
+public class MedicationResponse {
     private String name;
     private Double weight;
     private String code;

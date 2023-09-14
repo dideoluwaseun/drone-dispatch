@@ -1,8 +1,8 @@
 package com.oluwaseun.dronedispatch.controller;
 
 import com.oluwaseun.dronedispatch.model.dto.DroneDTO;
-import com.oluwaseun.dronedispatch.model.dto.MedicationRequestDTO;
-import com.oluwaseun.dronedispatch.model.dto.MedicationResponseDTO;
+import com.oluwaseun.dronedispatch.model.dto.MedicationRequest;
+import com.oluwaseun.dronedispatch.model.dto.MedicationResponse;
 import com.oluwaseun.dronedispatch.model.entity.Drone;
 import com.oluwaseun.dronedispatch.model.entity.Medication;
 import com.oluwaseun.dronedispatch.service.DroneDispatchService;
@@ -27,12 +27,12 @@ public class DispatchController {
     }
 
     @PostMapping("/medication")
-    public ResponseEntity<Medication> createMedication(@RequestBody @Valid MedicationRequestDTO medicationRequestDTO) {
-        return new ResponseEntity<>(medicationService.createMedication(medicationRequestDTO), HttpStatus.CREATED);
+    public ResponseEntity<Medication> createMedication(@RequestBody @Valid MedicationRequest medicationRequest) {
+        return new ResponseEntity<>(medicationService.createMedication(medicationRequest), HttpStatus.CREATED);
     }
 
     @GetMapping("/medication")
-    public ResponseEntity<Page<MedicationResponseDTO>> getAllMedications(@RequestParam Integer pageSize, Integer pageIndex) {
+    public ResponseEntity<Page<MedicationResponse>> getAllMedications(@RequestParam Integer pageSize, Integer pageIndex) {
         return new ResponseEntity<>(medicationService.getAllMedication(pageSize, pageIndex), HttpStatus.OK);
     }
 }
