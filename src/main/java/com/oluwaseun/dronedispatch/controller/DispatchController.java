@@ -1,6 +1,7 @@
 package com.oluwaseun.dronedispatch.controller;
 
 import com.oluwaseun.dronedispatch.model.dto.DroneDTO;
+import com.oluwaseun.dronedispatch.model.dto.DroneResponse;
 import com.oluwaseun.dronedispatch.model.dto.MedicationRequest;
 import com.oluwaseun.dronedispatch.model.dto.MedicationResponse;
 import com.oluwaseun.dronedispatch.model.entity.Drone;
@@ -34,5 +35,15 @@ public class DispatchController {
     @GetMapping("/medication")
     public ResponseEntity<Page<MedicationResponse>> getAllMedications(@RequestParam Integer pageSize, Integer pageIndex) {
         return new ResponseEntity<>(medicationService.getAllMedication(pageSize, pageIndex), HttpStatus.OK);
+    }
+
+    @GetMapping("/drone")
+    public ResponseEntity<Page<DroneResponse>> getAllDrones(@RequestParam Integer pageIndex, Integer pageSize) {
+        return new ResponseEntity<>(droneDispatchService.getAllDrones(pageIndex, pageSize), HttpStatus.OK);
+    }
+
+    @GetMapping("/drone/{id}")
+    public ResponseEntity<DroneResponse> getDroneById(@PathVariable Long id) {
+        return new ResponseEntity<>(droneDispatchService.getDroneById(id), HttpStatus.OK);
     }
 }
