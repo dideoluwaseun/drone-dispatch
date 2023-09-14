@@ -6,6 +6,9 @@ import lombok.*;
 @Getter
 @Setter
 @Entity(name = "users")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,6 +19,6 @@ public class AppUser {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private UserRole role = UserRole.ROLE_USER;
+    private UserRole userRole;
 
 }
