@@ -29,9 +29,9 @@ public class Drone {
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(
-            name = "drones_medications",
-            joinColumns = @JoinColumn(name = "drones_id"),
-            inverseJoinColumns = @JoinColumn(name = "medications_id")
+            name = "drone_medication",
+            joinColumns = @JoinColumn(name = "drone_id"),
+            inverseJoinColumns = @JoinColumn(name = "medication_id")
     )
     private Set<Medication> medications = new HashSet<>();
 
