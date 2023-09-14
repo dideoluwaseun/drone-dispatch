@@ -3,12 +3,12 @@ package com.oluwaseun.dronedispatch.controller;
 import com.oluwaseun.dronedispatch.model.dto.SignInResponse;
 import com.oluwaseun.dronedispatch.model.dto.SignUpRequest;
 import com.oluwaseun.dronedispatch.service.impl.UserServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("api/v1/user")
