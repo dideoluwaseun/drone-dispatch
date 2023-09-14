@@ -1,17 +1,17 @@
 CREATE TABLE IF NOT EXISTS drone (
                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                       serial_number VARCHAR(100),
-                       model VARCHAR(255),
-                       battery_capacity INT,
-                       state VARCHAR(100)
+                       serial_number VARCHAR(100) NOT NULL UNIQUE,
+                       model VARCHAR(255) NOT NULL,
+                       battery_capacity INT NOT NULL,
+                       state VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS medication (
                             id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                            name VARCHAR(255),
-                            weight DOUBLE,
-                            code VARCHAR(255),
-                            image VARCHAR(255)
+                            name VARCHAR(255) NOT NULL,
+                            weight DOUBLE NOT NULL,
+                            code VARCHAR(255) NOT NULL UNIQUE
+                            image VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS drone_medication (
@@ -26,6 +26,6 @@ CREATE TABLE IF NOT EXISTS audit_event_log (
                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                drone_id BIGINT,
                                time TIMESTAMP,
-                               battery_capacity INT,
+                               battery_capacity INT NOT NULL,
                                FOREIGN KEY (drone_id) REFERENCES drone (id)
 );
