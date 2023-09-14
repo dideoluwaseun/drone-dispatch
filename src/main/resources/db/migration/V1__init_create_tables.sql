@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS medication (
                             id BIGINT AUTO_INCREMENT PRIMARY KEY,
                             name VARCHAR(255) NOT NULL,
                             weight DOUBLE NOT NULL,
-                            code VARCHAR(255) NOT NULL UNIQUE
+                            code VARCHAR(255) NOT NULL UNIQUE,
                             image VARCHAR(255) NOT NULL
 );
 
