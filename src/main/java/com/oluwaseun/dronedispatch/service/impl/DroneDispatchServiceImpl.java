@@ -207,12 +207,12 @@ public class DroneDispatchServiceImpl implements DroneDispatchService {
                 }
                 case LOADING -> {
                     Integer requestBatteryCapacity = request.getBatteryCapacity();
-                    if (drone.getBatteryCapacity() < 25 && requestBatteryCapacity < 25) {
-                        log.error("drone battery level is below 25% and cannot be loaded");
-                        throw new ValidationException("drone battery level is below 25% and cannot be loaded");
-                    } else {
-                        log.info("setting drone state to loading");
+                    if ((requestBatteryCapacity == null || requestBatteryCapacity >= 25) && drone.getBatteryCapacity() >= 25) {
+                        log.info("Setting drone state to loading");
                         drone.setState(DroneState.LOADING);
+                    } else {
+                        log.error("Drone battery level is below 25% and cannot be loaded");
+                        throw new ValidationException("Drone battery level is below 25% and cannot be loaded");
                     }
                 }
                 case DELIVERING -> {
