@@ -92,14 +92,13 @@ public class DroneDispatchServiceImpl implements DroneDispatchService {
         log.info("processing load drone id {} request", request.getDroneId());
         Drone drone = droneRepository.findById(request.getDroneId()).orElseThrow(() -> new EntityNotFoundException("drone does not exist"));
 
-        if (drone.getBatteryCapacity() < 25) {
-            log.error("drone battery level is below 25% and cannot be loaded");
-            throw new ValidationException("drone battery level is below 25% and cannot be loaded");
+        if (!drone.getState().equals(DroneState.IDLE)) {
+            log.error("drone is being loaded or currently in use and cannot be loaded");
+            throw new ValidationException("drone is being loaded or currently in use and cannot be loaded");
         }
 
-        drone.setState(DroneState.LOADING);
         Set<Medication> medications = request.getMedicationCodes().stream().map(
-                code -> medicationRepository.findByCode(code).orElseThrow(() -> new EntityNotFoundException("medication does not exist"))).collect(Collectors.toSet());
+                code -> medicationRepository.findByCode(code).orElseThrow(() -> new EntityNotFoundException("medication "+code+" does not exist"))).collect(Collectors.toSet());
 
         checkWeightLimit(medications);
         drone.addMedications(medications);

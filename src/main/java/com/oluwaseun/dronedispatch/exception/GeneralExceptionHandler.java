@@ -29,7 +29,7 @@ public class GeneralExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, MissingServletRequestParameterException.class, DroneWeightLimitExceededException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, MissingServletRequestParameterException.class, DroneWeightLimitExceededException.class, ValidationException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleBadArgumentException(Exception ex, HttpServletRequest request) {
         ErrorResponse errorResponse = null;
