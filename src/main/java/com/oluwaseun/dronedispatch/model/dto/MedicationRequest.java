@@ -1,9 +1,11 @@
 package com.oluwaseun.dronedispatch.model.dto;
 
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class MedicationRequest {
     @NotBlank(message = "name is required")
     @Pattern(regexp = "^[a-zA-Z0-9_-]*$", message = "name can only contain letters, numbers, underscores and hyphens")
