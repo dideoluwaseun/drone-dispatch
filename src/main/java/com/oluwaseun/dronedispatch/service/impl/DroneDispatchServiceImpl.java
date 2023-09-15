@@ -190,8 +190,8 @@ public class DroneDispatchServiceImpl implements DroneDispatchService {
                 droneState = Enum.valueOf(DroneState.class, state);
             }
             catch (IllegalArgumentException e) {
-                log.error("string {} does not match any enum constant, valid values are RETURNING, DELIVERED, LOADING, DELIVERING, IDLE", state);
-                throw new ValidationException("string "+state+" is not valid, valid values are RETURNING, DELIVERED, LOADING, DELIVERING, IDLE");
+                log.error("string {} does not match any enum constant for drone state, valid values are RETURNING, DELIVERED, LOADING, DELIVERING, IDLE", state);
+                throw new ValidationException("string "+state+" is not valid drone state, valid values are RETURNING, DELIVERED, LOADING, DELIVERING, IDLE");
         }
             switch (droneState) {
                 case IDLE -> {
