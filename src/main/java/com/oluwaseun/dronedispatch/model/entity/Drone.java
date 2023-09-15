@@ -28,8 +28,8 @@ public class Drone {
     @Enumerated(EnumType.STRING)
     private DroneModel model;
 
-    @Min(value = 1, message = "Value must be greater than or equal to 1")
-    @Max(value = 100, message = "Value must be less than or equal to 100")
+    @Min(value = 1, message = "battery capacity value must be greater than or equal to 1")
+    @Max(value = 100, message = "battery capacity value must be less than or equal to 100")
     private Integer batteryCapacity;
     @Enumerated(EnumType.STRING)
     private DroneState state;

@@ -4,13 +4,10 @@ import com.oluwaseun.dronedispatch.exception.DroneWeightLimitExceededException;
 import com.oluwaseun.dronedispatch.exception.DuplicateEntityException;
 import com.oluwaseun.dronedispatch.exception.EntityNotFoundException;
 import com.oluwaseun.dronedispatch.exception.ValidationException;
-import com.oluwaseun.dronedispatch.model.dto.DroneDTO;
+import com.oluwaseun.dronedispatch.model.dto.DroneRequest;
 import com.oluwaseun.dronedispatch.model.dto.DroneResponse;
 import com.oluwaseun.dronedispatch.model.dto.UpdateDroneRequest;
-import com.oluwaseun.dronedispatch.model.entity.AuditEventLog;
-import com.oluwaseun.dronedispatch.model.entity.Drone;
-import com.oluwaseun.dronedispatch.model.entity.DroneState;
-import com.oluwaseun.dronedispatch.model.entity.Medication;
+import com.oluwaseun.dronedispatch.model.entity.*;
 import com.oluwaseun.dronedispatch.repository.AuditEventLogRepository;
 import com.oluwaseun.dronedispatch.repository.DroneRepository;
 import com.oluwaseun.dronedispatch.repository.MedicationRepository;
@@ -41,20 +38,30 @@ public class DroneDispatchServiceImpl implements DroneDispatchService {
     private static final double DRONE_MAX_WEIGHT = 500.00;
 
     @Override
-    public Drone registerDrone(DroneDTO droneDTO) {
+    public Drone registerDrone(DroneRequest droneRequest) {
         log.info("processing register drone request");
-        Optional<Drone> drone = droneRepository.findBySerialNumber(droneDTO.getSerialNumber());
+        Optional<Drone> drone = droneRepository.findBySerialNumber(droneRequest.getSerialNumber());
 
         if(drone.isPresent()) {
             log.error("drone already exists");
             throw new DuplicateEntityException("drone already exists");
         }
 
+        DroneModel droneModel;
+        String model = droneRequest.getModel();
+            try {
+                droneModel = Enum.valueOf(DroneModel.class, model);
+            }
+            catch (IllegalArgumentException e) {
+                log.error("string {} does not match any enum constant for drone model, valid values are LIGHTWEIGHT, MIDDLEWEIGHT, CRUISERWEIGHT, HEAVYWEIGHT", model);
+                throw new ValidationException("string "+model+" is not valid drone model, valid values are LIGHTWEIGHT, MIDDLEWEIGHT, CRUISERWEIGHT, HEAVYWEIGHT");
+            }
+
         log.info("done processing register drone request");
         return droneRepository.save(Drone.builder()
-                .serialNumber(droneDTO.getSerialNumber())
-                .model(droneDTO.getModel())
-                .batteryCapacity(droneDTO.getBatteryCapacity())
+                .serialNumber(droneRequest.getSerialNumber())
+                .model(droneModel)
+                .batteryCapacity(droneRequest.getBatteryCapacity())
                 .state(DroneState.IDLE).build());
     }
 
