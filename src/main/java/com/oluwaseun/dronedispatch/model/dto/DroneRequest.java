@@ -1,9 +1,11 @@
 package com.oluwaseun.dronedispatch.model.dto;
 
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class DroneRequest {
     @NotBlank(message = "serial number is required")
     @Pattern(regexp = "^.{0,100}$", message = "serial number should be 100 characters max")
