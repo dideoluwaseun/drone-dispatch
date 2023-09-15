@@ -7,8 +7,6 @@ various endpoints to interact with these drones. Users are required to sign up a
 JWT for authentication. This service uses in-memory H2 database, database configuration properties can be found
 in the `application.properties` file of the project.
 
-## Requirements
-
 ### Features
 
 - Register a drone with its details.
@@ -52,6 +50,7 @@ To run the Drone Dispatch Service locally, follow these instructions:
 The service will start on port 8080 by default.
 
 ## Endpoints
+
 ### User Registration
 
 **Endpoint:** `/api/v1/users/sign-up`
@@ -81,6 +80,71 @@ Example Request Body:
   "batteryCapacity": 6
 }
 ```
+
+2. **Create Medication**: `/api/v1/drone-dispatch/medication`
+
+   **Method:** `POST`
+Example Request Body:
+
+```json
+{
+"name": "Paracetamol",
+"weight": 57.47,
+"code": "PARA_O5",
+"image": "imageurl_path"
+}
+```
+
+3. **Get All Medications**: `/api/v1/drone-dispatch/medication`
+   **Method:** `GET`
+   **Query Parameters**: `pageIndex`(int) and `pageSize`(int)
+
+
+4. **Get All Drones**: `/api/v1/drone-dispatch/drone`
+      **Method:** `GET`
+   **Query Parameters**: `pageIndex`(int) and `pageSize`(int)
+
+
+5. **Get Loaded Medication Items and Battery Level for a Drone**: `/api/v1/drone-dispatch/drone/{id}`
+   **Method:** `GET`
+   **Path Variable**: `id`(Long)
+
+
+6. **Load Medications onto a Drone**: `/api/v1/drone-dispatch/drone/load`
+
+   **Method:** `POST`
+Example Request Body:
+
+```json
+
+{
+"droneId": 1,
+"medicationCodes": ["ERY3_0", "IBU0_5"]
+}
+```
+
+7. **Get Available Drones for Loading**: `/api/v1/drone-dispatch/drone/available`
+
+   **Method:** `GET`
+
+      Query Parameters: `pageIndex`(int) and `pageSize`(int)
+
+
+8. **Update Drone State and Battery Capacity**: `/api/v1/drone-dispatch/drone/{id}`
+
+   **Method:** `PATCH`
+
+      Path Variable: `id`(Long)
+
+   Example Request Body:
+
+```json
+{
+"state": "DELIVERED",
+"batteryCapacity": 48
+}
+```
+
 ## Security
 This service is secured using JWT (JSON Web Token) for user authentication.
 Users need to sign up and obtain a JWT token to access the protected endpoints.
