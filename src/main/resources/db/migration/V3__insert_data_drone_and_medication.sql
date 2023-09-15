@@ -13,7 +13,7 @@ VALUES ('DRONE001', 'HEAVYWEIGHT', 90, 'IDLE'),
 
 INSERT INTO medication (name, weight, code, image)
  VALUES ('Paracetamol', 10.5, 'PCM10_5', 'image_url_a'),
-        ('Ibuprofen', 0.5, 'iby0_5', 'image_url_b'),
+        ('Ibuprofen', 0.5, 'IBU0_5', 'image_url_b'),
         ('Paracetamol', 1.5, 'PCM1_5', 'image_url_c'),
         ('Metronidazole', 2.5, 'MET2_5', 'image_url_d'),
         ('Erythromycin', 3.0, 'ERY3_0', 'image_url_e'),
