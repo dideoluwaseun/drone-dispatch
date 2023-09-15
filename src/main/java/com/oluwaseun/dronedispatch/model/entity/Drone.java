@@ -1,6 +1,7 @@
 package com.oluwaseun.dronedispatch.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -39,9 +40,14 @@ public class Drone {
             joinColumns = @JoinColumn(name = "drone_id"),
             inverseJoinColumns = @JoinColumn(name = "medication_id")
     )
+    @JsonManagedReference
     private Set<Medication> medications = new HashSet<>();
 
     @OneToMany
     @JsonBackReference
     private Set<AuditEventLog> auditEventLogs = new HashSet<>();
+
+    public void addMedications(Set<Medication> medications) {
+        this.medications.addAll(medications);
+    }
 }

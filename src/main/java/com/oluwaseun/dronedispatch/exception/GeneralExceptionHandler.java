@@ -29,10 +29,11 @@ public class GeneralExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, MissingServletRequestParameterException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, MissingServletRequestParameterException.class, DroneWeightLimitExceededException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleBadArgumentException(Exception ex, HttpServletRequest request) {
         ErrorResponse errorResponse = null;
+
         if(ex instanceof MethodArgumentNotValidException exception) {
             errorResponse = ErrorResponse.builder()
                     .path(request.getRequestURI())
@@ -41,11 +42,11 @@ public class GeneralExceptionHandler {
                     .timestamp(Calendar.getInstance().getTime())
                     .build();
         }
-        if(ex instanceof MissingServletRequestParameterException exception) {
+        if(ex instanceof MissingServletRequestParameterException || ex instanceof DroneWeightLimitExceededException || ex instanceof ValidationException) {
             errorResponse = ErrorResponse.builder()
                     .path(request.getRequestURI())
                     .status(HttpStatus.BAD_REQUEST.value())
-                    .message(exception.getMessage())
+                    .message(ex.getMessage())
                     .timestamp(Calendar.getInstance().getTime())
                     .build();
         }
