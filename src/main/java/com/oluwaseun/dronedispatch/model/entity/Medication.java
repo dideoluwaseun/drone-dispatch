@@ -2,6 +2,7 @@ package com.oluwaseun.dronedispatch.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -23,6 +24,7 @@ public class Medication {
     @Pattern(regexp = "^[a-zA-Z0-9_-]*$", message = "name can only contain letters, numbers, underscores and hyphens")
     private String name;
 
+    @Min(value = 0, message = "Value must be greater than or equal to 0")
     private Double weight;
 
     @Pattern(regexp = "^[A-Z0-9_]*$", message = "code can contain only capital letters, underscores and numbers")
