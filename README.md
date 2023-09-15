@@ -57,21 +57,21 @@ The service will start on port 8080 by default.
 **Endpoint:** `/api/v1/users/sign-up`
 **Method:** `POST`
 
-Registers a new user. Requires providing a `username`, `password` and `userRole` in the request body.
-User roles available are ROLE_ADMIN and ROLE_USER.
-Returns access Token.
+Registers a new user. Requires providing a `username` and `password` in the request body.
 
 ### User Login
 
 **Endpoint:** `/api/v1/users/sign-in`
 **Method:** `POST`
 
-Authenticates a user. Requires providing a `username` and `password` as request parameters. Returns a JWT token upon successful authentication.
+Authenticates a user. Requires providing a `username` and `password` as request parameters. Returns a JWT access token upon successful authentication.
 
 ### Drone Dispatch
 Here are the available endpoints of the Drone Dispatch Service:
 
-1. **Register a Drone**: `POST /api/v1/drone-dispatch/drone/register`
+1. **Register a Drone**: `/api/v1/drone-dispatch/drone/register`
+
+   **Method:** `POST`
 
 Example Request Body:
 ```json
