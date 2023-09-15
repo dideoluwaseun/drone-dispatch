@@ -53,4 +53,10 @@ public class DispatchController {
     public ResponseEntity<Page<DroneResponse>> getAllAvailableDronesForLoading(@RequestParam Integer pageIndex, Integer pageSize) {
         return new ResponseEntity<>(droneDispatchService.getAllAvailableDrones(pageIndex, pageSize), HttpStatus.OK);
     }
+
+    @PatchMapping("/drone/{id}")
+    public ResponseEntity<Void> updateDroneStateAndBatteryCapacity(@PathVariable Long id, @RequestBody @Valid UpdateDroneRequest updateDroneRequest) {
+        droneDispatchService.updateDroneStateAndBatteryCapacity(updateDroneRequest, id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

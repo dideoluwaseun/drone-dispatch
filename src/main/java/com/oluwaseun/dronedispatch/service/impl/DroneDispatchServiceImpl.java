@@ -6,6 +6,7 @@ import com.oluwaseun.dronedispatch.exception.EntityNotFoundException;
 import com.oluwaseun.dronedispatch.exception.ValidationException;
 import com.oluwaseun.dronedispatch.model.dto.DroneDTO;
 import com.oluwaseun.dronedispatch.model.dto.DroneResponse;
+import com.oluwaseun.dronedispatch.model.dto.UpdateDroneRequest;
 import com.oluwaseun.dronedispatch.model.entity.AuditEventLog;
 import com.oluwaseun.dronedispatch.model.entity.Drone;
 import com.oluwaseun.dronedispatch.model.entity.DroneState;
@@ -17,6 +18,7 @@ import com.oluwaseun.dronedispatch.service.DroneDispatchService;
 import com.oluwaseun.dronedispatch.model.dto.LoadDroneRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -103,6 +105,11 @@ public class DroneDispatchServiceImpl implements DroneDispatchService {
             throw new ValidationException("drone is being loaded or currently in use and cannot be loaded");
         }
 
+        if (drone.getBatteryCapacity() < 25) {
+            log.error("drone battery level is below 25% and cannot be loaded");
+            throw new ValidationException("drone battery level is below 25% and cannot be loaded");
+        }
+
         Set<Medication> medications = request.getMedicationCodes().stream().map(
                 code -> medicationRepository.findByCode(code).orElseThrow(() -> new EntityNotFoundException("medication "+code+" does not exist"))).collect(Collectors.toSet());
 
@@ -163,5 +170,64 @@ public class DroneDispatchServiceImpl implements DroneDispatchService {
             pageNumber++;
             pageable = PageRequest.of(pageNumber, pageSize);
         } while (dronePage.hasNext());
+    }
+
+    @Override
+    public void updateDroneStateAndBatteryCapacity(UpdateDroneRequest request, Long id) {
+        log.info("processing update drone request for {}", id);
+
+        Drone drone = droneRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("drone with id "+id+" does not exist"));
+
+        Integer batteryCapacity = request.getBatteryCapacity();
+        if(batteryCapacity !=null) {
+            drone.setBatteryCapacity(batteryCapacity);
+        }
+
+        DroneState droneState;
+        String state = request.getState();
+        if(StringUtils.isNotBlank(state)) {
+            try {
+                droneState = Enum.valueOf(DroneState.class, state);
+            }
+            catch (IllegalArgumentException e) {
+                log.error("string {} does not match any enum constant for drone state, valid values are RETURNING, DELIVERED, LOADING, DELIVERING, IDLE", state);
+                throw new ValidationException("string "+state+" is not valid drone state, valid values are RETURNING, DELIVERED, LOADING, DELIVERING, IDLE");
+        }
+            switch (droneState) {
+                case IDLE -> {
+                    log.info("setting drone state to idle");
+                    drone.setState(DroneState.IDLE);
+                }
+                case LOADING -> {
+                    Integer requestBatteryCapacity = request.getBatteryCapacity();
+                    if (drone.getBatteryCapacity() < 25 && requestBatteryCapacity < 25) {
+                        log.error("drone battery level is below 25% and cannot be loaded");
+                        throw new ValidationException("drone battery level is below 25% and cannot be loaded");
+                    } else {
+                        log.info("setting drone state to loading");
+                        drone.setState(DroneState.LOADING);
+                    }
+                }
+                case DELIVERING -> {
+                    log.info("setting drone state to delivering");
+                    drone.setState(DroneState.DELIVERING);
+                }
+                case DELIVERED -> {
+                    log.info("setting drone state to delivered");
+                    drone.setState(DroneState.DELIVERED);
+                }
+                case RETURNING -> {
+                    log.info("setting drone state to returning");
+                    drone.setState(DroneState.RETURNING);
+                }
+                default -> {
+                    log.warn("Unknown state encountered for update drone: {}", droneState);
+                    throw new ValidationException("unknown state " + droneState);
+                }
+            }
+        }
+
+        droneRepository.save(drone);
+        log.info("done processing update drone request for {}", id);
     }
  }

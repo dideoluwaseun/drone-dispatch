@@ -4,6 +4,7 @@ import com.oluwaseun.dronedispatch.model.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -67,7 +68,7 @@ public class GeneralExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(DuplicateEntityException.class)
+    @ExceptionHandler({DuplicateEntityException.class, HttpMessageNotReadableException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleDuplicateException(DuplicateEntityException ex, HttpServletRequest request) {
         ErrorResponse errorResponse = ErrorResponse.builder()
