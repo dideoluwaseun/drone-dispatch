@@ -6,9 +6,11 @@ import com.oluwaseun.dronedispatch.exception.EntityNotFoundException;
 import com.oluwaseun.dronedispatch.exception.ValidationException;
 import com.oluwaseun.dronedispatch.model.dto.DroneDTO;
 import com.oluwaseun.dronedispatch.model.dto.DroneResponse;
+import com.oluwaseun.dronedispatch.model.entity.AuditEventLog;
 import com.oluwaseun.dronedispatch.model.entity.Drone;
 import com.oluwaseun.dronedispatch.model.entity.DroneState;
 import com.oluwaseun.dronedispatch.model.entity.Medication;
+import com.oluwaseun.dronedispatch.repository.AuditEventLogRepository;
 import com.oluwaseun.dronedispatch.repository.DroneRepository;
 import com.oluwaseun.dronedispatch.repository.MedicationRepository;
 import com.oluwaseun.dronedispatch.service.DroneDispatchService;
@@ -17,8 +19,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,7 +35,7 @@ import java.util.stream.Collectors;
 public class DroneDispatchServiceImpl implements DroneDispatchService {
     private final DroneRepository droneRepository;
     private final MedicationRepository medicationRepository;
-
+    private final AuditEventLogRepository auditEventLogRepository;
     private static final double DRONE_MAX_WEIGHT = 500.00;
 
     @Override
@@ -137,4 +143,25 @@ public class DroneDispatchServiceImpl implements DroneDispatchService {
                 .batteryCapacity(drone.getBatteryCapacity())
                 .build());
     }
-}
+
+    @Scheduled(fixedRate = 900000)//every 15 mins
+    public void checkAndLogBatteryLevels(){
+        int pageSize = 10;
+        int pageNumber = 0;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        Page<Drone> dronePage;
+        do {
+            dronePage = droneRepository.findAll(pageable);
+
+            List<AuditEventLog> auditEventLogs = dronePage.stream().map(
+                    drone -> AuditEventLog.builder().drone(drone).time(Instant.now()).batteryCapacity(drone.getBatteryCapacity()).build()).collect(Collectors.toList());
+            auditEventLogRepository.saveAll(auditEventLogs);
+
+            log.info("logging audit for battery level check");
+            pageNumber++;
+            pageable = PageRequest.of(pageNumber, pageSize);
+        } while (dronePage.hasNext());
+    }
+ }
