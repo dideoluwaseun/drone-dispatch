@@ -20,8 +20,8 @@ public class DispatchController {
     private final MedicationService medicationService;
 
     @PostMapping("/drone/register")
-    public ResponseEntity<Drone> registerDrone(@RequestBody @Valid DroneDTO droneDTO) {
-        return new ResponseEntity<>(droneDispatchService.registerDrone(droneDTO), HttpStatus.CREATED);
+    public ResponseEntity<Drone> registerDrone(@RequestBody @Valid DroneRequest droneRequest) {
+        return new ResponseEntity<>(droneDispatchService.registerDrone(droneRequest), HttpStatus.CREATED);
     }
 
     @PostMapping("/medication")
