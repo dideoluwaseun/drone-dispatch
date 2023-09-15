@@ -120,4 +120,21 @@ public class DroneDispatchServiceImpl implements DroneDispatchService {
             }
         }
     }
+
+    @Override
+    public Page<DroneResponse> getAllAvailableDrones(Integer pageIndex, Integer pageSize) {
+        log.info("processing get all available drones for loading request");
+        DroneState state = DroneState.IDLE;
+        Integer batteryCapacity = 25;
+        Page<Drone> dronePage = droneRepository.findByStateEqualsAndBatteryCapacityGreaterThanEqual(state, batteryCapacity, PageRequest.of(pageIndex, pageSize));
+
+        log.info("done processing get all available drones for loading request");
+        return dronePage.map(drone -> DroneResponse.builder()
+                .id(drone.getId())
+                .state(drone.getState())
+                .serialNumber(drone.getSerialNumber())
+                .model(drone.getModel())
+                .batteryCapacity(drone.getBatteryCapacity())
+                .build());
+    }
 }
