@@ -45,7 +45,7 @@ public class DispatchController {
     }
 
     @PostMapping("/drone/load")
-    public ResponseEntity<Void> registerDrone(@RequestBody @Valid LoadDroneRequest loadDroneRequest) {
+    public ResponseEntity<Void> loadDrone(@RequestBody @Valid LoadDroneRequest loadDroneRequest) {
         droneDispatchService.loadDrone(loadDroneRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
