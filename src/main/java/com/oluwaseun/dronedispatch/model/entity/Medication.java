@@ -1,5 +1,6 @@
 package com.oluwaseun.dronedispatch.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
@@ -29,6 +30,7 @@ public class Medication {
     private String image;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "medications")
+    @JsonBackReference
     private Set<Drone> drones = new HashSet<>();
 
 }

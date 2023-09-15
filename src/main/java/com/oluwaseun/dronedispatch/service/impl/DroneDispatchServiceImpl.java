@@ -1,13 +1,18 @@
 package com.oluwaseun.dronedispatch.service.impl;
 
+import com.oluwaseun.dronedispatch.exception.DroneWeightLimitExceededException;
 import com.oluwaseun.dronedispatch.exception.DuplicateEntityException;
 import com.oluwaseun.dronedispatch.exception.EntityNotFoundException;
+import com.oluwaseun.dronedispatch.exception.ValidationException;
 import com.oluwaseun.dronedispatch.model.dto.DroneDTO;
 import com.oluwaseun.dronedispatch.model.dto.DroneResponse;
 import com.oluwaseun.dronedispatch.model.entity.Drone;
 import com.oluwaseun.dronedispatch.model.entity.DroneState;
+import com.oluwaseun.dronedispatch.model.entity.Medication;
 import com.oluwaseun.dronedispatch.repository.DroneRepository;
+import com.oluwaseun.dronedispatch.repository.MedicationRepository;
 import com.oluwaseun.dronedispatch.service.DroneDispatchService;
+import com.oluwaseun.dronedispatch.model.dto.LoadDroneRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -15,12 +20,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class DroneDispatchServiceImpl implements DroneDispatchService {
     private final DroneRepository droneRepository;
+    private final MedicationRepository medicationRepository;
+
+    private static final double DRONE_MAX_WEIGHT = 500.00;
 
     @Override
     public Drone registerDrone(DroneDTO droneDTO) {
@@ -75,5 +85,39 @@ public class DroneDispatchServiceImpl implements DroneDispatchService {
                 .batteryCapacity(drone.get().getBatteryCapacity())
                 .medications(drone.get().getMedications())
                 .build();
+    }
+
+    @Override
+    public void loadDrone(LoadDroneRequest request) {
+        log.info("processing load drone id {} request", request.getDroneId());
+        Drone drone = droneRepository.findById(request.getDroneId()).orElseThrow(() -> new EntityNotFoundException("drone does not exist"));
+
+        if (!drone.getState().equals(DroneState.IDLE)) {
+            log.error("drone is being loaded or currently in use and cannot be loaded");
+            throw new ValidationException("drone is being loaded or currently in use and cannot be loaded");
+        }
+
+        Set<Medication> medications = request.getMedicationCodes().stream().map(
+                code -> medicationRepository.findByCode(code).orElseThrow(() -> new EntityNotFoundException("medication "+code+" does not exist"))).collect(Collectors.toSet());
+
+        checkWeightLimit(medications);
+        drone.addMedications(medications);
+        log.info("loading drone");
+
+        drone.setState(DroneState.LOADED);
+        droneRepository.save(drone);
+        log.info("done processing load drone id {} request", request.getDroneId());
+    }
+
+    public void checkWeightLimit(Set<Medication> medications) {
+        double sumOfWeights = 0.0;
+
+        for (Medication medication : medications) {
+            sumOfWeights += medication.getWeight();
+            if (sumOfWeights > DRONE_MAX_WEIGHT) {
+                log.error("sum of medication weights exceeds the limit");
+                throw new DroneWeightLimitExceededException("sum of medication weights exceeds the limit");
+            }
+        }
     }
 }
