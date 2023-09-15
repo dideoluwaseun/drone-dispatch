@@ -49,4 +49,8 @@ public class DispatchController {
         droneDispatchService.loadDrone(loadDroneRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @GetMapping("/drone/available")
+    public ResponseEntity<Page<DroneResponse>> getAllAvailableDronesForLoading(@RequestParam Integer pageIndex, Integer pageSize) {
+        return new ResponseEntity<>(droneDispatchService.getAllAvailableDrones(pageIndex, pageSize), HttpStatus.OK);
+    }
 }

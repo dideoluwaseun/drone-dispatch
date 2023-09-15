@@ -11,5 +11,5 @@ public interface DroneDispatchService {
     Page<DroneResponse> getAllDrones(Integer pageIndex, Integer pageSize);
     DroneResponse getDroneById(Long id);
     void loadDrone(LoadDroneRequest request);
-
+    Page<DroneResponse> getAllAvailableDrones(Integer pageIndex, Integer pageSize);
 }
