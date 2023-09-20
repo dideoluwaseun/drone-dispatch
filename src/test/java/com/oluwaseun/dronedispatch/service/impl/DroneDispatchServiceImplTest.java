@@ -20,17 +20,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class DroneDispatchServiceImplTest {
@@ -175,21 +179,8 @@ class DroneDispatchServiceImplTest {
 
     @Test
     void checkAndLogBatteryLevels() {
-        //given
-        int pageSize = 10;
-        int pageNumber = 0;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        List<Drone> drones = new ArrayList<>();
-        drones.add(Drone.builder().build());
-
-        //when
-        when(droneRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(drones));
         droneDispatchService.checkAndLogBatteryLevels();
-
-        //then
-        verify(droneRepository, times(1)).findAll(pageable);
-        verify(auditEventLogRepository, times(1)).saveAll(anyList());
-
+        Mockito.verify(auditEventLogRepository, times(1)).logBatteryLevels();
     }
 
     @Nested
