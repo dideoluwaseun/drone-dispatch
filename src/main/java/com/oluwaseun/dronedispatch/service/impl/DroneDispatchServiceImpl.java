@@ -40,12 +40,6 @@ public class DroneDispatchServiceImpl implements DroneDispatchService {
     @Override
     public Drone registerDrone(DroneRequest droneRequest) {
         log.info("processing register drone request");
-        Optional<Drone> drone = droneRepository.findBySerialNumber(droneRequest.getSerialNumber());
-
-        if(drone.isPresent()) {
-            log.error("drone already exists");
-            throw new DuplicateEntityException("drone already exists");
-        }
 
         DroneModel droneModel;
         String model = droneRequest.getModel();
@@ -57,12 +51,21 @@ public class DroneDispatchServiceImpl implements DroneDispatchService {
                 throw new ValidationException("string "+model+" is not valid drone model, valid values are LIGHTWEIGHT, MIDDLEWEIGHT, CRUISERWEIGHT, HEAVYWEIGHT");
             }
 
-        log.info("done processing register drone request");
-        return droneRepository.save(Drone.builder()
+        Drone drone = Drone.builder()
                 .serialNumber(droneRequest.getSerialNumber())
                 .model(droneModel)
                 .batteryCapacity(droneRequest.getBatteryCapacity())
-                .state(DroneState.IDLE).build());
+                .state(DroneState.IDLE).build();
+
+        try {
+            droneRepository.save(drone);
+        } catch (DataIntegrityViolationException e) {
+            log.error("drone already exists");
+            throw new DuplicateEntityException("drone already exists");
+        }
+
+        log.info("done processing register drone request");
+        return drone;
     }
 
     @Override

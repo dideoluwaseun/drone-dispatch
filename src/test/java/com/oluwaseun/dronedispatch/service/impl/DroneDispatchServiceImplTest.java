@@ -71,7 +71,7 @@ class DroneDispatchServiceImplTest {
         @Test
         void registerDroneThrowDuplicateExceptionWhenDroneExists() {
             //when
-            when(droneRepository.findBySerialNumber(anyString())).thenReturn(Optional.of(Drone.builder().build()));
+            when(droneRepository.save(any(Drone.class))).thenThrow(DataIntegrityViolationException.class);
             //then
             assertThrows(DuplicateEntityException.class, () -> droneDispatchService.registerDrone(droneRequest));
         }

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -56,7 +57,7 @@ class MedicationServiceImplTest {
         @Test
         void createMedicationThrowDuplicateExceptionIfMedAlreadyExists() {
             //when
-            when(medicationRepository.findByCode(anyString())).thenReturn(Optional.of(Medication.builder().build()));
+            when(medicationRepository.save(any(Medication.class))).thenThrow(DataIntegrityViolationException.class);
 
             //then
             assertThrows(DuplicateEntityException.class, ()->medicationService.createMedication(request));

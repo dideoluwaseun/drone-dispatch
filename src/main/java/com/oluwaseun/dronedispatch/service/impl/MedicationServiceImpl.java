@@ -8,11 +8,10 @@ import com.oluwaseun.dronedispatch.repository.MedicationRepository;
 import com.oluwaseun.dronedispatch.service.MedicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,20 +22,23 @@ public class MedicationServiceImpl implements MedicationService {
     @Override
     public Medication createMedication(MedicationRequest medicationRequest) {
         log.info("processing create medication request");
-        Optional<Medication> medication = medicationRepository.findByCode(medicationRequest.getCode());
 
-        if(medication.isPresent()) {
+        Medication medication = Medication.builder()
+                .name(medicationRequest.getName())
+                .code(medicationRequest.getCode())
+                .weight(medicationRequest.getWeight())
+                .image(medicationRequest.getImage())
+                .build();
+
+        try {
+            medicationRepository.save(medication);
+        } catch (DataIntegrityViolationException e) {
             log.error("medication already exists");
             throw new DuplicateEntityException("medication already exists");
         }
 
         log.info("done processing create medication request");
-        return medicationRepository.save(Medication.builder()
-                .name(medicationRequest.getName())
-                .code(medicationRequest.getCode())
-                .weight(medicationRequest.getWeight())
-                .image(medicationRequest.getImage())
-                .build());
+        return medication;
     }
 
     @Override
