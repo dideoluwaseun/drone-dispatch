@@ -3,7 +3,7 @@ package com.oluwaseun.dronedispatch.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.Instant;
+import java.sql.Timestamp;
 
 @Entity
 @Getter
@@ -20,7 +20,7 @@ public class AuditEventLog {
     @ManyToOne
     @JoinColumn(name = "drone_id")
     private Drone drone;
-    private Instant time;
+    private Timestamp time;
     private Integer batteryCapacity;
 
 }
