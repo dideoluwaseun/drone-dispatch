@@ -11,11 +11,10 @@ import com.oluwaseun.dronedispatch.security.JwtTokenProvider;
 import com.oluwaseun.dronedispatch.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +33,7 @@ public class UserServiceImpl implements UserService {
         log.info("processing sign in request");
 
         try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
             UserRole userRole = userRepository.findByUsername(username).getUserRole();
             String token = jwtTokenProvider.generateToken(username, userRole);
@@ -54,17 +51,16 @@ public class UserServiceImpl implements UserService {
     public void signup(SignUpRequest request) {
         log.info("processing sign up request");
 
-        if (!userRepository.existsByUsername(request.getUsername())) {
-
+        try{
             userRepository.save(AppUser.builder()
                     .username(request.getUsername())
-                            .userRole(UserRole.ROLE_USER)
+                    .userRole(UserRole.ROLE_USER)
                     .password(passwordEncoder.encode(request.getPassword()))
                     .build());
-
-            log.info("done processing sign up request");
-        } else {
+        } catch (DataIntegrityViolationException e) {
+            log.error("user already exists");
             throw new DuplicateEntityException("Username is already in use");
         }
+        log.info("done processing sign up request");
     }
 }
